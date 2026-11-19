@@ -1,17 +1,34 @@
-# Asda 2 Client Config
+# Asda 2 Client Bridge
 
-This project solves a connection problem in our Asda 2 WCell setup. The Asda 2 client had its server address and port hardcoded in the executable, so pointing it at our WCell server meant patching the game binary.
+`bridge.dll` changes how the Asda 2 client behaves from inside its own process, without editing the game files. It is built for [asda2-server-tahadi](https://github.com/wassim-triki/asda2-server-tahadi), our Asda 2 server built on [WCell](https://github.com/WCell/WCell).
 
-The C DLL moves that endpoint into `client_config.ini`. During startup, the client’s assembly bridge calls the DLL’s `configure_client` function. The DLL reads the INI file beside the game executable and applies a valid IPv4 address and port to the client’s server settings. The game then connects using its existing network code.
+The client's assembly stub loads `bridge.dll` at the start of the game and calls its `configure_client` function before any game data is read. The DLL then:
 
-The server this is for is [asda2-server-tahadi](https://github.com/wassim-triki/asda2-server-tahadi), our Asda 2 server built on [WCell](https://github.com/WCell/WCell), the server framework it uses.
+- **Server endpoint:** applies the server address and port from `bridge.ini` (the client had them hardcoded).
+- **Frame pacing:** requests a 1 ms system timer so frames come out evenly.
+- **Language folders:** serves files from `lang/<language>/` in place of the client's own files when they exist there, so one client can switch languages.
+- **Text direction:** draws text left to right when the language's `juidata/font/FontInfo.ini` sets `TextDirection=LTR` (the client is right to left by default).
 
-Copy `client_config.ini.example` to `client_config.ini` beside the game executable and set the server endpoint:
+## Settings
+
+Copy `bridge.ini.example` to `bridge.ini` beside the game executable:
 
 ```ini
 [server]
 host=127.0.0.1
 port=5000
+
+[client]
+; en (the base files) or a folder under lang\, e.g. ar
+language=en
 ```
 
-The DLL and assembly bridge must also be installed in the client for the override to work.
+## Build
+
+32-bit Windows DLL, built with [Zig](https://ziglang.org/):
+
+```
+zig cc -target x86-windows-gnu -shared -O2 -o bridge.dll bridge.c endpoint_config.c text_direction.c lang_overlay.c -lwinmm -lws2_32
+```
+
+Copy `bridge.dll` into the client's `system` folder. The client must also have the assembly stub that loads it.
