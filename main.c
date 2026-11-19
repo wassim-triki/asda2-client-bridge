@@ -12,7 +12,7 @@ int main(void)
 
   char config_path[MAX_PATH];
 
-  if(!get_endpoint_config_path(config_path, sizeof(config_path))){
+  if(!get_bridge_config_path(config_path, sizeof(config_path))){
     printf("Failed to resolve config path.\n");
     return 1;
   }

@@ -15,6 +15,7 @@ void apply_endpoint_config(
     const char *config_path
 );
 
-int get_endpoint_config_path(char *path, size_t capacity);
+/* bridge.ini next to the game exe. */
+int get_bridge_config_path(char *path, size_t capacity);
 
 #endif

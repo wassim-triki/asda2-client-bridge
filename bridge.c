@@ -11,7 +11,7 @@ void __cdecl configure_client(struct server_settings *settings){
      jumpy. Ask for 1 ms so frames come out evenly. */
   timeBeginPeriod(1);
 
-  if(!get_endpoint_config_path(config_path, sizeof(config_path))){
+  if(!get_bridge_config_path(config_path, sizeof(config_path))){
     return;
   }
 

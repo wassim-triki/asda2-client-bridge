@@ -42,7 +42,7 @@ void apply_endpoint_config (struct server_settings *settings, const char *config
   }
 }
 
-int get_endpoint_config_path(char *path, size_t capacity)
+int get_bridge_config_path(char *path, size_t capacity)
 {
   DWORD path_length = GetModuleFileNameA(NULL, path,capacity);
   if (path_length == 0 || path_length >= capacity) {
@@ -58,7 +58,7 @@ int get_endpoint_config_path(char *path, size_t capacity)
 
   size_t remaining_space = capacity - (filename - path);
 
-  const char *ini_name = "client_config.ini";
+  const char *ini_name = "bridge.ini";
   
   if (strlen(ini_name) + 1 > remaining_space) {
       return 0;
