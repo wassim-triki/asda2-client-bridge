@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <string.h>
 #include "text_direction.h"
+#include "lang_overlay.h"
 
 #define FONT_INFO_PATH "./juidata/font/FontInfo.ini"
 
@@ -161,11 +162,17 @@ static void apply_ltr_patches(void)
 void apply_text_direction(void)
 {
     char direction[8];
+    char font_info[MAX_PATH];
+
+    /* The language folder's FontInfo.ini, as the game will read it. */
+    if (!lang_overlay_resolve_a(FONT_INFO_PATH, font_info, sizeof(font_info))) {
+        lstrcpynA(font_info, FONT_INFO_PATH, sizeof(font_info));
+    }
     GetPrivateProfileStringA("FontInfo", "TextDirection", "",
-                             direction, sizeof(direction), FONT_INFO_PATH);
+                             direction, sizeof(direction), font_info);
 
     if (lstrcmpiA(direction, "LTR") == 0) {
-        text_inset = GetPrivateProfileIntA("FontInfo", "TextInset", 8, FONT_INFO_PATH);
+        text_inset = GetPrivateProfileIntA("FontInfo", "TextInset", 8, font_info);
         apply_ltr_patches();
     }
 }

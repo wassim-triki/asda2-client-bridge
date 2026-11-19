@@ -1,3 +1,7 @@
 [server]
 host=127.0.0.1
 port=5000
+
+[client]
+; en (the base files) or a folder under lang\, e.g. ar
+language=en
